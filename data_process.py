@@ -15,6 +15,13 @@ def process_nmr_txt(txt_path, save_path=None):
             except:
                 raise 
         elif len(item.split('\n')) == 4:
+            # Scene Adaptation Module: Parse reactant/candidate molecules
+            # 场景适配模块：解析反应物/候选分子
+            # When input has 4 lines, the first line contains comma-separated
+            # SMILES strings of reactant molecules that will be incorporated
+            # into the candidate pool through scene adaptation.
+            # 当输入有4行时，第一行包含反应物分子的逗号分隔SMILES字符串，
+            # 这些分子将通过场景适配纳入候选池。
             try:
                 item0, item1, item2, item3 = item.split('\n')[0], item.split('\n')[1], item.split('\n')[2], item.split('\n')[3]
             except:
@@ -23,6 +30,8 @@ def process_nmr_txt(txt_path, save_path=None):
             print(f"{id} failed: {item}")
             continue
         try:
+            # Extract reactant SMILES if provided (for scene adaptation)
+            # 提取反应物SMILES（如果提供）（用于场景适配）
             candidates = item0.split(', ') if len(item.split('\n')) == 4 else []
             smi = item1
             h_raw = parse_h_raw(item2)

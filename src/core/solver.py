@@ -175,6 +175,22 @@ def run_solver(
 ) -> Tuple[NMRMolPool, Dict[str, Dict]]:
     """
     Main solver function to optimize molecules based on NMR data.
+    
+    Args:
+        config: Configuration dictionary
+        H_split: 1H NMR splitting patterns
+        H_shifts: 1H NMR chemical shifts
+        C_shifts: 13C NMR chemical shifts
+        allowed_elements: List of allowed chemical elements
+        constraints: Structural constraints
+        candidates: List of reactant/candidate SMILES strings. These molecules are
+                   incorporated into the candidate pool through the scene adaptation
+                   module to improve prediction accuracy by leveraging substructures
+                   that may be preserved during reactions.
+        logger: Logger instance
+    
+    Returns:
+        Tuple of (optimized molecule pool, intermediate results)
     """
     # if logger is None, no logging
     if logger is None:
@@ -197,6 +213,17 @@ def run_solver(
         invalid_patterns_list.append(pattern)
     config['invalid_patterns'] = invalid_patterns_list
 
+    # ============================================================================
+    # Scene Adaptation Module: Validate and process candidate/reactant molecules
+    # 场景适配模块：验证和处理候选/反应物分子
+    # ============================================================================
+    # This section implements the scene adaptation functionality that allows
+    # incorporating reactant structures into the candidate pool. By including
+    # reactants, the solver can leverage substructures that may be preserved
+    # during reactions and are reflected in the NMR spectra.
+    # 
+    # 此部分实现场景适配功能，允许将反应物结构纳入候选池。通过包含反应物，
+    # 求解器可以利用在反应中可能保留并在NMR波谱中体现的子结构。
     candidates_mol = []
     if candidates is not None:
         for smi in candidates:
@@ -234,6 +261,33 @@ def run_solver(
         
         logger.info('num_mol_search: %d', len(nmr_mol_pool))
         
+        # ========================================================================
+        # Scene Adaptation Module: Integrate candidates/reactants into pool
+        # 场景适配模块：将候选/反应物集成到分子池
+        # ========================================================================
+        # This is the core implementation of the scene adaptation module.
+        # Steps:
+        # 1. Predict NMR chemical shifts for candidate/reactant molecules
+        # 2. Create a candidate molecule pool with predicted NMR data
+        # 3. Merge candidate pool into the main molecule pool
+        #
+        # By integrating reactants, the solver can:
+        # - Preserve chemical fragments that may be retained during reactions
+        # - Leverage known NMR characteristics of reactant substructures
+        # - Improve chemical reasonability of structure predictions
+        # - Provide additional spectral constraints for optimization
+        #
+        # 这是场景适配模块的核心实现。
+        # 步骤：
+        # 1. 为候选/反应物分子预测NMR化学位移
+        # 2. 使用预测的NMR数据创建候选分子池
+        # 3. 将候选池合并到主分子池中
+        #
+        # 通过集成反应物，求解器可以：
+        # - 保留在反应中可能保留的化学片段
+        # - 利用反应物子结构的已知NMR特征
+        # - 提高结构预测的化学合理性
+        # - 为优化提供额外的波谱约束
         if candidates:
             result = predict_nmr_from_mol(candidates, raw=True)
             nmr_mol_candidate = NMRMolPool(result)
