@@ -54,6 +54,38 @@ def cut_mols_into_frags(
 ) -> pd.DataFrame:
     """
     Cut molecules into fragments.
+    
+    This function is part of the physics-guided fragment optimization process.
+    When the molecule pool contains reactants (added via scene adaptation),
+    those reactants are also cut into fragments. This allows the crossover
+    operation to recombine fragments from different sources, including:
+    - Database search results
+    - Reactant molecules (via scene adaptation)
+    - Previously generated molecules
+    
+    By including reactant fragments, the solver can generate new candidate
+    molecules that incorporate substructures from the reactants, improving
+    the chemical reasonability and NMR matching accuracy.
+    
+    此函数是物理引导片段优化过程的一部分。当分子池包含反应物（通过场景适配
+    添加）时，这些反应物也会被切割成片段。这允许交叉操作重组来自不同来源的
+    片段，包括：
+    - 数据库搜索结果
+    - 反应物分子（通过场景适配）
+    - 先前生成的分子
+    
+    通过包含反应物片段，求解器可以生成包含来自反应物的子结构的新候选分子，
+    提高化学合理性和NMR匹配准确性。
+    
+    Args:
+        p: Multiprocessing pool
+        logger: Logger instance
+        config: Configuration dictionary
+        nmr_mol_pool: Molecule pool (may contain reactants from scene adaptation)
+        allowed_elements: List of allowed chemical elements
+        
+    Returns:
+        DataFrame containing fragments with their properties
     """
     optional_halogens = config['optional_halogens']
     if allowed_elements:

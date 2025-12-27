@@ -122,6 +122,19 @@ class NMRMolPool(object):
     def add_pool(self, pool: "NMRMolPool") -> None:
         """
         Add molecules from another NMRMolPool to this pool.
+        
+        This method is critical for the scene adaptation module, as it enables
+        the integration of candidate/reactant molecules into the main pool.
+        When reactants are added, their fragments become available for the
+        crossover operation, allowing the solver to generate new molecules
+        that incorporate substructures from the reactants.
+        
+        此方法对场景适配模块至关重要，因为它支持将候选/反应物分子集成到主池中。
+        当反应物被添加时，它们的片段可用于交叉操作，使求解器能够生成包含
+        来自反应物的子结构的新分子。
+        
+        Args:
+            pool: Another NMRMolPool to merge into this pool
         """
         assert self.is_scored == pool.is_scored, "Both pools must have the same scoring status."
         self.mol_list.extend(pool.mol_list)

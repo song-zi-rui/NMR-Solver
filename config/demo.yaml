@@ -19,6 +19,13 @@ include_active_hs: 'yes'
 data_path: "./data/demo/test.lmdb"
 nmr_type: 'HC'
 use_elements: True
+# Scene Adaptation Module: Enable/disable reactant/candidate integration
+# 场景适配模块：启用/禁用反应物/候选分子集成
+# When enabled, reactant molecules specified in the input data will be
+# incorporated into the candidate structure pool, allowing their substructures
+# to be utilized during fragment-based molecular optimization.
+# 启用后，输入数据中指定的反应物分子将被纳入候选结构池，
+# 允许在基于片段的分子优化过程中利用它们的子结构。
 use_candidates: False
 # debug
 plot_result: 10

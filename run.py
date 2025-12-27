@@ -55,6 +55,13 @@ def main(config):
         smiles = input_data['smiles']
         allowed_elements = get_elements_from_mol(smiles) if config['use_elements'] else None
         constraints = {"allowed_elements": allowed_elements} if config['use_elements'] else None
+        # Scene Adaptation Module: Load candidate/reactant molecules from input data
+        # 场景适配模块：从输入数据加载候选/反应物分子
+        # If use_candidates is enabled, reactant SMILES will be extracted from
+        # the input data and passed to the solver for integration into the
+        # candidate structure pool.
+        # 如果启用use_candidates，将从输入数据中提取反应物SMILES，
+        # 并传递给求解器以集成到候选结构池中。
         candidates = input_data.get("candidates", []) if config['use_candidates'] else []
         
         logger.info('smiles: %s', smiles)
