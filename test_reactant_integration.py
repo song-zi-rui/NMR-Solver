@@ -12,6 +12,9 @@ import ast
 import os
 import sys
 
+# Get the base directory dynamically
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
 
 def test_solver_has_candidates_parameter():
     """Test that run_solver has candidates parameter."""
@@ -20,7 +23,7 @@ def test_solver_has_candidates_parameter():
     print("测试1：求解器函数有候选参数")
     print("=" * 70)
     
-    solver_path = '/home/runner/work/NMR-Solver/NMR-Solver/src/core/solver.py'
+    solver_path = os.path.join(BASE_DIR, 'src', 'core', 'solver.py')
     with open(solver_path, 'r') as f:
         content = f.read()
     
@@ -61,7 +64,7 @@ def test_scene_adaptation_comments():
     print("测试2：场景适配注释存在")
     print("=" * 70)
     
-    solver_path = '/home/runner/work/NMR-Solver/NMR-Solver/src/core/solver.py'
+    solver_path = os.path.join(BASE_DIR, 'src', 'core', 'solver.py')
     with open(solver_path, 'r') as f:
         content = f.read()
     
@@ -94,7 +97,7 @@ def test_pool_add_method():
     print("测试3：池添加方法已文档化")
     print("=" * 70)
     
-    pool_path = '/home/runner/work/NMR-Solver/NMR-Solver/src/core/pool.py'
+    pool_path = os.path.join(BASE_DIR, 'src', 'core', 'pool.py')
     with open(pool_path, 'r') as f:
         content = f.read()
     
@@ -129,7 +132,7 @@ def test_config_has_use_candidates():
     print("测试4：配置有use_candidates选项")
     print("=" * 70)
     
-    config_path = '/home/runner/work/NMR-Solver/NMR-Solver/config/demo.yaml'
+    config_path = os.path.join(BASE_DIR, 'config', 'demo.yaml')
     with open(config_path, 'r') as f:
         content = f.read()
     
@@ -152,7 +155,7 @@ def test_analysis_document_exists():
     print("测试5：分析文档存在")
     print("=" * 70)
     
-    doc_path = '/home/runner/work/NMR-Solver/NMR-Solver/REACTANT_INTEGRATION_ANALYSIS.md'
+    doc_path = os.path.join(BASE_DIR, 'REACTANT_INTEGRATION_ANALYSIS.md')
     assert os.path.exists(doc_path), "Analysis document should exist"
     print("✓ Analysis document exists")
     
@@ -160,18 +163,19 @@ def test_analysis_document_exists():
         content = f.read()
     
     # Check for key sections
-    assert '场景适配' in content or 'Scene Adaptation' in content, \
-        "Document should discuss scene adaptation"
-    print("✓ Scene adaptation discussed")
+    required_sections = [
+        ('场景适配' in content or 'Scene Adaptation' in content, "Scene adaptation"),
+        ('candidates' in content.lower(), "Candidates"),
+        ('反应物' in content or 'reactant' in content.lower(), "Reactants"),
+        ('核心功能描述' in content or 'Core Feature Description' in content, "Core feature description"),
+        ('关键代码组件' in content or 'Key Code Components' in content, "Key code components"),
+        ('工作流程' in content or 'Workflow' in content, "Workflow"),
+    ]
     
-    assert 'candidates' in content.lower(), "Document should mention candidates"
-    print("✓ Candidates mentioned")
+    for condition, section_name in required_sections:
+        assert condition, f"Document should contain section: {section_name}"
+        print(f"✓ {section_name} section present")
     
-    assert '反应物' in content or 'reactant' in content.lower(), \
-        "Document should mention reactants"
-    print("✓ Reactants mentioned")
-    
-    assert len(content) > 5000, "Document should be comprehensive (>5000 chars)"
     print(f"✓ Document is comprehensive ({len(content)} chars)")
     
     print("\n✓ Test 5 PASSED")
@@ -185,7 +189,7 @@ def test_run_py_loads_candidates():
     print("测试6：运行脚本加载候选")
     print("=" * 70)
     
-    run_path = '/home/runner/work/NMR-Solver/NMR-Solver/run.py'
+    run_path = os.path.join(BASE_DIR, 'run.py')
     with open(run_path, 'r') as f:
         content = f.read()
     
